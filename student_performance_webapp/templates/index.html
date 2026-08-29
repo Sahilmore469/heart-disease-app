@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Exam Score Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <header class="board">
+    <div class="board-frame">
+      <p class="board-eyebrow">Room 204 &middot; Data-Driven Academics</p>
+      <h1 class="board-title">Exam&nbsp;Score Predictor</h1>
+      <p class="board-sub">Chalk in a student's habits &amp; context below — a linear regression model trained on
+        6,606 real student records draws the grade.</p>
+      <div class="board-stats">
+        <div class="chalk-stat"><span>{{ (metrics.r2*100)|round(1) }}%</span>variance explained (R&sup2;)</div>
+        <div class="chalk-stat"><span>&plusmn;{{ metrics.mae|round(2) }}</span>average error (MAE)</div>
+        <div class="chalk-stat"><span>6,606</span>students trained on</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="desk">
+    <section class="sheet" aria-label="Student input form">
+      <div class="sheet-margin"></div>
+      <div class="sheet-body">
+        <h2 class="sheet-heading">Student Study Sheet</h2>
+
+        <form id="predict-form">
+          <fieldset>
+            <legend>Study &amp; habits</legend>
+            <div class="field-grid">
+              {% for col in num_cols %}
+              <div class="field">
+                <label for="{{ col }}">{{ field_meta[col].label }}</label>
+                <input
+                  type="number"
+                  id="{{ col }}"
+                  name="{{ col }}"
+                  min="{{ num_ranges[col][0] }}"
+                  max="{{ num_ranges[col][1] }}"
+                  step="0.5"
+                  value="{{ ((num_ranges[col][0] + num_ranges[col][1]) / 2) | round(1) }}"
+                  required
+                />
+                <span class="field-help">{{ field_meta[col].help }} &middot; {{ num_ranges[col][0]|int }}&ndash;{{ num_ranges[col][1]|int }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Context &amp; environment</legend>
+            <div class="field-grid">
+              {% for col in cat_cols %}
+              <div class="field">
+                <label for="{{ col }}">{{ field_meta[col].label }}</label>
+                <select id="{{ col }}" name="{{ col }}" required>
+                  {% for opt in cat_options[col] %}
+                  <option value="{{ opt }}">{{ opt }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <button type="submit" id="grade-btn">Grade this student</button>
+        </form>
+      </div>
+    </section>
+
+    <aside class="report" aria-label="Prediction result">
+      <div class="report-card">
+        <p class="report-label">Predicted Exam Score</p>
+
+        <div class="score-wrap" id="score-wrap">
+          <svg viewBox="0 0 220 220" class="score-circle" id="score-circle" aria-hidden="true">
+            <path class="circle-path circle-path-1"
+              d="M 110 20 C 170 18, 200 55, 198 108 C 196 165, 160 200, 108 200 C 55 200, 22 168, 20 110 C 18 55, 55 22, 110 20 Z" />
+            <path class="circle-path circle-path-2"
+              d="M 108 24 C 165 22, 196 58, 194 106 C 193 160, 158 196, 110 196 C 58 196, 26 164, 24 108 C 22 58, 56 26, 108 24 Z" />
+          </svg>
+          <span class="score-number" id="score-number">--</span>
+        </div>
+
+        <p class="report-remark" id="report-remark">Fill in the sheet and hit grade.</p>
+
+        <div class="report-divider"></div>
+        <p class="report-footnote">Model: Linear Regression &middot; RMSE {{ metrics.rmse|round(2) }} points</p>
+      </div>
+
+      <div class="tip-note">
+        <p><strong>From the analysis:</strong> attendance and study hours are the clearest numeric drivers of
+          exam score — but motivation, parental involvement, and peer influence move the needle just as much.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    <p>Built from <em>Student_Performance_Analysis_kaggle_dataset.ipynb</em> — dataset: Student Performance Factors (Kaggle).</p>
+  </footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
