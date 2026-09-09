@@ -10,7 +10,7 @@
 ![Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?style=flat-square&logo=render&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 
-[Live Demo](#) · [Report Bug](../../issues) · [Request Feature](../../issues)
+[Live Demo](https://heart-disease-app-3-81wu.onrender.com) · [Report Bug](../../issues) · [Request Feature](../../issues)
 
 </div>
 
